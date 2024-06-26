@@ -3,27 +3,11 @@ import * as FileSystem from 'expo-file-system';
 
 
 const usersFilePath = FileSystem.documentDirectory + 'users.json';
-const proprisFilePath = FileSystem.documentDirectory + 'propris.json';
+const agendamentosFilePath = FileSystem.documentDirectory + 'agendamentos.json';
 
 let users = []; // Lista de usuários
-let propris = []; //lista de proprietarios
+let agendamentos = []; // Lista de agendamentos
 
-const loadPropris = async () => {
-    try{
-        const fileExists = await FileSystem.getInfoAsync(proprisFilePath); // Verifica se o arquivo existe
-        if (fileExists.exists) {
-            const fileContent = await FileSystem.readAsStringAsync(proprisFilePath);
-            propris = JSON.parse(fileContent);
-        } else {
-            // Se o arquivo não existir, cria um novo
-            await FileSystem.writeAsStringAsync(proprisFilePath, '[]');
-            propris = []; // Inicializa a lista de propri vazia
-        }
-    } catch (error) {
-        console.error("Erro ao carregar proprietarios:", error);
-    }
-
-};
 
 const loadUsers = async () => {
     try {
@@ -40,40 +24,6 @@ const loadUsers = async () => {
         console.error("Erro ao carregar usuários:", error);
     }
 };
-
-loadPropris();
-
-export const cadastrarPropri = async (nome, cpfCnpj, email, senha) => {
-    return new Promise(async (resolve, reject) => {
-        if (!cpfCnpj || !nome || !email || !senha) {
-            reject("O CPF/CPNJ, nome, email e senha são obrigatórios");
-        }
-
-        if (propris.some(propri => propri.email === email)) {
-            reject("Este email já está cadastrado");
-        }
-
-        const newpropris = { cpfCnpj, nome, email, senha };
-        propris.push(newpropris);
-
-        await FileSystem.writeAsStringAsync(proprisFilePath, JSON.stringify(propris, null, 2));
-
-        resolve("Proprietário cadastrado com sucesso");
-    });
-
-}
-
-export const loginPropri = async (nome, email, senha) => {
-    return new Promise((resolve, reject) => {
-        const propri = propris.find(propri => propri.nome === nome && propri.email === email && propri.senha === senha);
-        if (propri) {
-            resolve("Login successful");
-        } else {
-            reject("Email ou senha incorretos");
-        }
-    });
-};
-
 
 loadUsers();
 
@@ -107,9 +57,6 @@ export const loginUser = async (email, senha) => {
     });
 
 };
-
-const agendamentosFilePath = FileSystem.documentDirectory + 'agendamentos.json';
-let agendamentos = [];
 
 const loadAgendamentos = async () => {
     try {
